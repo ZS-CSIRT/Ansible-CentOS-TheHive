@@ -1,0 +1,35 @@
+---
+
+- name: Install ElasticSearch
+  yum:
+    name: "elasticsearch"
+    state: latest
+  become: yes
+  become_user: root
+
+- name: Configure ElasticSearch
+  lineinfile:
+    path: "{{ ELK_CONF_FILE }}"
+    regexp: "{{ item.r }}"
+    line: "{{ item.l }}"
+  with_items:
+    - { r: "cluster.name", l: "cluster.name: {{ ELK_CLUSTER_NAME }}" }
+    - { r: "node.name", l: "node.name: {{ ELK_NODE_NAME }}" }
+    - { r: "network.host", l: "network.host: {{ ELK_HOST }}" }
+    - { r: "http.port", l: "#http.port: 9200"}
+    - { r: "transport.tcp.port", l: "transport.tcp.port: 9300" }
+    - { r: "script.inline", l: "script.inline: true" }
+    - { r: "thread_pool.index.queue_size", l: "thread_pool.index.queue_size: 100000" }
+    - { r: "thread_pool.search.queue_size", l: "thread_pool.search.queue_size: 100000" }
+    - { r: "thread_pool.bulk.queue_size", l: "thread_pool.bulk.queue_size: 100000" }
+  become: yes
+  become_user: root
+
+- name: Start ElasticSearch service
+  systemd:
+    name: "elasticsearch"
+    state: started
+    enabled: yes
+    daemon-reload: yes
+  become: yes
+  become_user: root

@@ -1,0 +1,20 @@
+---
+# tasks file for ansible-CentOS7-TheHive
+
+# Initialise the system
+- include: '000_system_init.yml'
+
+# Install system dependencies
+- include: '001_system_dependencies.yml'
+
+# Install theHive
+- include: '002_install_theHive.yml'
+
+# Install ElasticSearch 5.x
+- include: '003_install_ELK.yml'
+
+# Install NGINX
+- include: '004_install_Nginx.yml'
+
+# Configure Firewall
+- include: '005_configure_firewall.yml'

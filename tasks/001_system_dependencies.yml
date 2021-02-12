@@ -1,0 +1,36 @@
+---
+
+- name: Install TheHive repository
+  yum:
+    name: "https://dl.bintray.com/thehive-project/rpm-stable/thehive-project-release-1.1.0-2.noarch.rpm"
+    state: latest
+  become: yes
+  become_user: root
+
+- name: Import ElasticSearch repository GPG Key
+  command: "rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+  become: yes
+  become_user: root
+
+- name: Configure ElasticSearch Repository
+  copy:
+    dest: "{{ ELK_REPO_FILE }}"
+    content: |
+      [elasticsearch-5.x]
+      name=Elasticsearch repository for 5.x packages
+      baseurl=https://artifacts.elastic.co/packages/5.x/yum
+      gpgcheck=1
+      gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+      enabled=1
+      autorefresh=1
+      type=rpm-md
+  become: yes
+  become_user: root
+
+- name: Install epel-release repo
+  yum:
+    name: epel-release
+    state: latest
+  become: yes
+  become_user: root
+

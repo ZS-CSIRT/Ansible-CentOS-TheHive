@@ -1,0 +1,50 @@
+---
+# defaults file for ansible-CentOS7-TheHive
+
+# TheHive configuration variables
+HOSTNAME: "hive-01"
+FQDN: 'hive-01.local'
+HIVE_IP: "192.168.153.101"
+HIVE_BASEURL: "https://192.168.153.101"
+ORG_ID: "MyOrg"
+HIVE_EMAIL: "admin@myorg.com"
+HIVE_CONF: "/etc/thehive/application.conf"
+
+# ElasticSearch configuration variables
+ELK_REPO_FILE: "/etc/yum.repos.d/elasticsearch.repo"
+ELK_CONF_FILE: "/etc/elasticsearch/elasticsearch.yml"
+ELK_HOST: "127.0.0.1"
+ELK_CLUSTER_NAME: "hive"
+ELK_NODE_NAME: "Hive-node-01"
+ELK_INDEX: "the_hive"
+
+# SSL Configuration
+SSL: "true"
+SSL_SELF_SIGNED: "false"
+
+# OpenSSL settings for cert
+OPENSSL_C: "C"
+OPENSSL_ST: "ST"
+OPENSSL_L: "L"
+OPENSSL_O: " {{ ORG_ID }}"
+OPENSSL_CN: "{{ FQDN }}"
+HIVE_KEY: "hive.key"
+HIVE_CSR: "hive.csr"
+HIVE_CRT: "hive.crt"
+HIVE_CA: "hive.ca.crt"
+
+# LDAP Config
+LDAP_PROVIDER: "[local,ldap]"
+LDAP_SERVERS: "[server.name]"
+LDAP_BIND_DN: "CN=User,OU=x,OU=xx,DC=xxx,DC=xxxx,DC=xxxxx"
+LDAP_BIND_PW: "**Password**"
+LDAP_BASE_DN: "OU=x,OU=xx,DC=xxx,DC=xxxx,DC=xxxxx"
+LDAP_FILTER: "(sAMAccountName={0})"
+
+# Cortex configuration variables
+CORTEX_INSTALL: "False"
+CORTEX_IP: "192.168.153.102"
+CORTEX_FQDN: "cortex-01.local"
+
+# NGINX Config
+NGINX_CONF_FILE: "/etc/nginx/conf.d/000-CortexSSL.conf"

@@ -1,0 +1,148 @@
+---
+
+- name: Install TheHive
+  yum:
+    name: "thehive"
+    state: latest
+  become: yes
+  become_user: root
+
+
+- name: Configure TheHive Security parameters
+  lineinfile:
+    path: "{{ HIVE_CONF }}"
+    regexp: "{{ item.r }}"
+    line: "{{ item.l }}"
+    backrefs: yes
+  with_items:
+    - {r: "play.http.secret.key", l: "play.http.secret.key='{{ hive_http_secret }}'"}
+    - {r: "session.secure", l: "session.secure=true" }
+  become: yes
+  become_user: root
+  no_log: true
+
+- name: Configure TheHive DB parameters
+  lineinfile:
+    path: "{{ HIVE_CONF }}"
+    regexp: "{{ item.r }}"
+    line: "{{ item.l }}"
+    backrefs: yes
+  with_items:
+    - { r: "index =", l: "index = {{ ELK_INDEX }}" }
+    - { r: "cluster =", l: "cluster = {{ ELK_CLUSTER_NAME }}" }
+  become: yes
+  become_user: root
+
+- name: Configure TheHive LDAP Connection
+  lineinfile:
+    path: "{{ HIVE_CONF }}"
+    regexp: "{{ item.r }}"
+    line: "{{ item.l }}"
+  with_items:
+    - { r: "provider =", l: "provider = {{ LDAP_PROVIDER }}" }
+    - { r: "ldap {", l: "\tldap {\r\n\t\tserverNames = {{ LDAP_SERVERS }}\r\n\t\tbindDN = \"{{ LDAP_BIND_DN }}\"\r\n\t\tbindPW = \"{{ ldap_bind_pw }}\"\r\n\t\tbaseDN = \"{{ LDAP_BASE_DN }}\"\r\n\t\tfilter = \"{{ LDAP_FILTER }}\"\r\n" }
+  become: yes
+  become_user: root
+
+- name: Configure Akka (netty) remote IP to localhost
+  lineinfile:
+    path: "{{ HIVE_CONF }}"
+    regexp: "{{ item.r }}"
+    line: "{{ item.l }}"
+  with_items:
+    - { r: "akka.remote.netty.tcp.hostname", l: "akka.remote.netty.tcp.hostname = \"127.0.0.1\"" }
+  become: yes
+  become_user: root
+  when: 
+    CORTEX_INSTALL == "True"
+
+- name: Configure Cortex
+  lineinfile:
+    path: "{{ HIVE_CONF }}"
+    regexp: "{{ item.r }}"
+    line: "{{ item.l }}"
+    backrefs: yes
+  with_items:
+    - { r: "CortexConnector", l: "play.modules.enabled += connectors.cortex.CortexConnector" }
+    - { r: "#\"CORTEX", l: "  \"CORTEX-01\" {\r\n    url = \"https://{{ CORTEX_FQDN }}\"\r\n    key = \"{{ cortex_user_key }}\"\r\n    #ws {}\r\n  }\r\n  refreshDelay = 1 minute \r\n  maxRetryOnError = 3 \r\n  statusCheckInterval = 1 minute" }
+  become: yes
+  become_user: root
+  when: 
+    CORTEX_INSTALL == "True" and SSL == "true"
+
+- name: Configure Cortex
+  lineinfile:
+    path: "{{ HIVE_CONF }}"
+    regexp: "{{ item.r }}"
+    line: "{{ item.l }}"
+    backrefs: yes
+  with_items:
+    - { r: "CortexConnector", l: "play.modules.enabled += connectors.cortex.CortexConnector" }
+    - { r: "#\"CORTEX", l: "  \"CORTEX-01\" {\r\n    url = \"http://{{ CORTEX_FQDN }}\"\r\n    key = \"{{ cortex_user_key }}\"\r\n    #ws {}\r\n  }\r\n  refreshDelay = 1 minute \r\n  maxRetryOnError = 3 \r\n  statusCheckInterval = 1 minute" }
+  become: yes
+  become_user: root
+  when:
+    CORTEX_INSTALL == "True" and SSL != "true"
+
+- name: Configure TheHive DataStore & Streaming parameters
+  blockinfile:
+    dest: "{{ HIVE_CONF }}"
+    block: |
+      # Datastore
+      datastore {
+        name = data
+        # Size of stored data chunks
+        chunksize = 50k
+        hash {
+          # Main hash algorithm /!\ Don't change this value
+          main = "SHA-256"
+          # Additional hash algorithms (used in attachments)
+          extra = ["SHA-1", "MD5"]
+        }
+        attachment.password = "infected"
+      }
+
+      # Streaming
+      stream.longpolling {
+        # Maximum time a stream request waits for new element
+        refresh = 1m
+        # Lifetime of the stream session without request
+        cache = 15m
+        nextItemMaxWait = 500ms
+        globalMaxWait = 1s
+      }
+
+      # Local Webhook
+      webhooks {
+          localWebhook {
+              url = "http://127.0.0.1:5000/webhook"
+          }
+      }
+
+  become: yes
+  become_user: root
+  no_log: true
+
+- name: Configure Entry Size Limit paramenter
+  lineinfile:
+    path: "{{ HIVE_CONF }}"
+    regexp: "{{ item.r }}"
+    line: "{{ item.l }}"
+    backrefs: yes
+  with_items:
+    - { r: "play.http.parser.maxMemoryBuffer", l: "play.http.parser.maxMemoryBuffer=1M" }
+    - { r: "play.http.parser.maxDiskBuffer", l: "play.http.parser.maxDiskBuffer=1G" }   
+  become: yes
+  become_user: root
+
+- name: Add Cortex IP to hosts file
+  lineinfile:
+    path: "/etc/hosts"
+    regexp: "{{ item.r }}"
+    line: "{{ item.l }}"
+  with_items:
+    - { r: "{{ CORTEX_IP }}", l: "{{ CORTEX_IP }} {{ CORTEX_FQDN }}" }
+  become: yes
+  become_user: root
+  when: 
+    CORTEX_INSTALL == "True"
