@@ -23,9 +23,8 @@ This role comes with 6 sets of variables:
     These variables are used to define how your "The Hive" instance will be configured.  
     The variables are:  
     HOSTNAME: choose a hostname for your server  
-    FQDN: the Fully Qualified Domaine Name of your server  
+    FQDN: the Fully Qualified Domaine Name of your server. Will also be used by the NGINX configuration template.    
     HIVE_IP: the IP address used by the "The Hive" server  
-    HIVE_BASEURL: the base URL you will use to connect to the "The Hive" web interface  
     ORG_ID: The ID or name of your Organisation. Will be used in "The Hive" to configure the organisation profile.  
     HIVE_EMAIL: The email that the "The Hive" instance will impersonate when sending email notifications.  
     HIVE_CONF: The location of the "The Hive" configuration file (default: /etc/thehive/application.conf)  

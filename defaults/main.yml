@@ -5,7 +5,6 @@
 HOSTNAME: "hive-01"
 FQDN: 'hive-01.local'
 HIVE_IP: "192.168.153.101"
-HIVE_BASEURL: "https://192.168.153.101"
 ORG_ID: "MyOrg"
 HIVE_EMAIL: "admin@myorg.com"
 HIVE_CONF: "/etc/thehive/application.conf"
