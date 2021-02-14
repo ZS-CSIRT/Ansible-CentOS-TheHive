@@ -1,11 +1,11 @@
 TheHive
 =========
 
-This role will install an instance of the tool "The Hive" on the selected server.
-The role was designed to install "StandAlone" servers of "The Hive", it will not support installing "The Hive" on one server and the ELK DB on another server.
+This role will install an instance of the tool "The Hive" on the selected server.  
+The role was designed to install "StandAlone" servers of "The Hive", it will not support installing "The Hive" on one server and the ELK DB on another server.  
 
-If you are installing a pair of "The Hive" and "Cortex" servers, first install the "Cortex" server to get the API Key for the connection between "The Hive" and "Cortex".
-See Vault variables "cortex_user_key"
+If you are installing a pair of "The Hive" and "Cortex" servers, first install the "Cortex" server to get the API Key for the connection between "The Hive" and "Cortex".  
+See Vault variables "cortex_user_key"  
 
 Requirements
 ------------
@@ -40,10 +40,10 @@ This role comes with 6 sets of variables:
     ELK_NODE_NAME: The name you want to give to the ELK node (You can have multiple nodes per clusters. This Ansible will not support multiple node setup)  
     ELK_INDEX: The name of your ELK index (Where all yout "The Hive" entries will be stored)  
 
- 3) SSL Configruation variables
-    These variables define if you will make the "The Hive" instance run over SSL and with a Self-Signed or Imported certificate.
-    SSL: Whether to use SSL or not (true or false)
-    SSL_SELF_SIGNED: Whether to use a self signed certificate or import one from the ansible vault (true or false)
+ 3) SSL Configruation variables  
+    These variables define if you will make the "The Hive" instance run over SSL and with a Self-Signed or Imported certificate.  
+    SSL: Whether to use SSL or not (true or false)  
+    SSL_SELF_SIGNED: Whether to use a self signed certificate or import one from the ansible vault (true or false)  
 
  4) OpenSSL settings for cert  
     These variables are used to configure and generate the self signed certificates used by "The Hive"  
@@ -55,8 +55,8 @@ This role comes with 6 sets of variables:
     OPENSSL_CN: The common name - This variable is by default populated by the FQDN variable  
     HIVE_KEY: The certificate private key file name used by "The Hive"  
     HIVE_CSR: The certificate signing request file name used by "The Hive"  
-    HIVE_CRT: The certificate file name used by "The Hive"
-    HIVE_CA: 
+    HIVE_CRT: The certificate file name used by "The Hive"  
+    HIVE_CA:  
 
  5) LDAP Config  
     These variables are used to configure the LDAP connection for the "The Hive" user authentication  
@@ -70,22 +70,22 @@ This role comes with 6 sets of variables:
     These variables are used to configure the "Cortex" instance linked to the "The Hive".  
     CORTEX_INSTALL: True or False, this variable defines if you want to configure the "Cortex" settings in this run of Ansible.  
     CORTEX_IP: The IP address of the "Cortex" instance  
-    CORTEX_FQDN: The "Cortex" FQDN to connect to.
+    CORTEX_FQDN: The "Cortex" FQDN to connect to.  
 
- 7) Nginx configuration variable
-    This variable is used to define the file path of the Nginx conf file.
+ 7) Nginx configuration variable  
+    This variable is used to define the file path of the Nginx conf file.  
 
- 8) Ansible Vault Variables
-    These variables are stored in the ansible vault as they are sensitive and should not be stored in cleartext on your ansible server.
-    You can create a vault by using the command: ansible-vault create /path/to/vault/file
-    hive_http_secret: the secret string to use for the hive http sessions
-    ldap_bind_pw: the password for the bind user when using LDAP connection
-    cortex_user_key: the API key for the cortex user to link Cortex and TheHive. 
+ 8) Ansible Vault Variables  
+    These variables are stored in the ansible vault as they are sensitive and should not be stored in cleartext on your ansible server.  
+    You can create a vault by using the command: ansible-vault create /path/to/vault/file  
+    hive_http_secret: the secret string to use for the hive http sessions  
+    ldap_bind_pw: the password for the bind user when using LDAP connection  
+    cortex_user_key: the API key for the cortex user to link Cortex and TheHive.  
 
 Dependencies
 ------------
 
-None
+Ansible 2.9+
 
 Example Playbook
 ----------------
